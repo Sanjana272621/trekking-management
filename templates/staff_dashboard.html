@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Trek Staff Dashboard</h2>
+
+<h4>Assigned Treks</h4>
+
+{% if treks %}
+
+<table class="table table-bordered table-striped mt-3">
+    <thead class="table-success">
+        <tr>
+            <th>Trek ID</th>
+            <th>Trek Name</th>
+            <th>Location</th>
+            <th>Difficulty</th>
+            <th>Slots</th>
+            <th>Participants</th>
+            <th>Status</th>
+            <th>Dates</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for trek in treks %}
+        <tr>
+            <td>{{ trek["trek_id"] }}</td>
+
+            <td>
+                <strong>{{ trek["trek_name"] }}</strong>
+            </td>
+
+            <td>{{ trek["location"] }}</td>
+
+            <td>{{ trek["difficulty"] }}</td>
+
+            <td>
+                {{ trek["available_slots"] }} /
+                {{ trek["total_slots"] }}
+            </td>
+
+            <td>{{ trek["participant_count"] }}</td>
+
+            <td>
+                <span class="badge bg-primary">
+                    {{ trek["status"] }}
+                </span>
+            </td>
+
+            <td>
+                {{ trek["start_date"] }}
+                <br>
+                to
+                <br>
+                {{ trek["end_date"] }}
+            </td>
+
+            <td>
+                <a href="{{ url_for('staff_update_trek', trek_id=trek['trek_id']) }}"
+                   class="btn btn-sm btn-warning mb-1">
+                    Update
+                </a>
+
+                <a href="{{ url_for('staff_participants', trek_id=trek['trek_id']) }}"
+                   class="btn btn-sm btn-info mb-1">
+                    Participants
+                </a>
+
+                {% if trek["status"] != "Completed" %}
+                <form method="POST"
+                      action="{{ url_for('complete_trek', trek_id=trek['trek_id']) }}"
+                      class="d-inline">
+
+                    <button class="btn btn-sm btn-success mb-1">
+                        Complete
+                    </button>
+
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+
+<div class="alert alert-info">
+    No treks have been assigned to you yet.
+</div>
+
+{% endif %}
+
+{% endblock %}

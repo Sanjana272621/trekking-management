@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Manage Treks</h2>
+
+<div class="mb-3">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+        Back to Dashboard
+    </a>
+
+    <a href="{{ url_for('create_trek') }}" class="btn btn-success">
+        Create New Trek
+    </a>
+</div>
+
+{% if treks %}
+
+<table class="table table-bordered table-striped">
+    <thead class="table-success">
+        <tr>
+            <th>ID</th>
+            <th>Trek Name</th>
+            <th>Location</th>
+            <th>Difficulty</th>
+            <th>Slots</th>
+            <th>Assigned Staff</th>
+            <th>Status</th>
+            <th>Dates</th>
+            <th>Assign Staff</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for trek in treks %}
+        <tr>
+            <td>{{ trek["trek_id"] }}</td>
+
+            <td>
+                <strong>{{ trek["trek_name"] }}</strong>
+                <br>
+                <small>{{ trek["description"] }}</small>
+            </td>
+
+            <td>{{ trek["location"] }}</td>
+
+            <td>{{ trek["difficulty"] }}</td>
+
+            <td>
+                {{ trek["available_slots"] }} /
+                {{ trek["total_slots"] }}
+            </td>
+
+            <td>
+                {% if trek["staff_name"] %}
+                    {{ trek["staff_name"] }}
+                {% else %}
+                    <span class="text-muted">Not assigned</span>
+                {% endif %}
+            </td>
+
+            <td>
+                <span class="badge bg-primary">
+                    {{ trek["status"] }}
+                </span>
+            </td>
+
+            <td>
+                {{ trek["start_date"] }}
+                <br>
+                to
+                <br>
+                {{ trek["end_date"] }}
+            </td>
+
+            <td>
+                <form method="POST"
+                      action="{{ url_for('assign_staff', trek_id=trek['trek_id']) }}">
+
+                    <select name="staff_id"
+                            class="form-select form-select-sm mb-2"
+                            required>
+                        <option value="">Select Staff</option>
+
+                        {% for staff in staff_members %}
+                            <option value="{{ staff['user_id'] }}">
+                                {{ staff["name"] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <button class="btn btn-sm btn-success">
+                        Assign
+                    </button>
+
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+
+<div class="alert alert-info">
+    No treks have been created yet.
+</div>
+
+{% endif %}
+
+{% endblock %}

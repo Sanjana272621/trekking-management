@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Update Trek</h2>
+
+<a href="{{ url_for('staff_dashboard') }}" class="btn btn-secondary mb-3">
+    Back to Dashboard
+</a>
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <h4>{{ trek["trek_name"] }}</h4>
+
+        <p>
+            <strong>Location:</strong>
+            {{ trek["location"] }}
+            <br>
+
+            <strong>Difficulty:</strong>
+            {{ trek["difficulty"] }}
+            <br>
+
+            <strong>Total Slots:</strong>
+            {{ trek["total_slots"] }}
+            <br>
+
+            <strong>Current Available Slots:</strong>
+            {{ trek["available_slots"] }}
+            <br>
+
+            <strong>Current Status:</strong>
+            {{ trek["status"] }}
+        </p>
+
+    </div>
+</div>
+
+<form method="POST">
+
+    <div class="mb-3">
+        <label class="form-label">Available Slots</label>
+        <input type="number"
+               name="available_slots"
+               class="form-control"
+               min="0"
+               max="{{ trek['total_slots'] }}"
+               value="{{ trek['available_slots'] }}"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Trek Status</label>
+        <select name="status" class="form-select" required>
+
+            <option value="Open"
+                {% if trek["status"] == "Open" %}selected{% endif %}>
+                Open
+            </option>
+
+            <option value="Closed"
+                {% if trek["status"] == "Closed" %}selected{% endif %}>
+                Closed
+            </option>
+
+            <option value="Started"
+                {% if trek["status"] == "Started" %}selected{% endif %}>
+                Started
+            </option>
+
+        </select>
+    </div>
+
+    <button class="btn btn-success">
+        Save Changes
+    </button>
+
+</form>
+
+{% endblock %}

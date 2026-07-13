@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Trekker Dashboard</h2>
+
+<div class="mb-3">
+    <a href="{{ url_for('view_treks') }}" class="btn btn-success">
+        View Available Treks
+    </a>
+</div>
+
+<h4>Your Bookings and Trekking History</h4>
+
+{% if bookings %}
+
+<table class="table table-bordered table-striped mt-3">
+    <thead class="table-success">
+        <tr>
+            <th>Booking ID</th>
+            <th>Trek</th>
+            <th>Location</th>
+            <th>Dates</th>
+            <th>Staff</th>
+            <th>Trek Status</th>
+            <th>Booking Status</th>
+            <th>Booked On</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking["booking_id"] }}</td>
+
+            <td>
+                <strong>{{ booking["trek_name"] }}</strong>
+            </td>
+
+            <td>{{ booking["location"] }}</td>
+
+            <td>
+                {{ booking["start_date"] }}
+                <br>
+                to
+                <br>
+                {{ booking["end_date"] }}
+            </td>
+
+            <td>
+                {% if booking["staff_name"] %}
+                    {{ booking["staff_name"] }}
+                {% else %}
+                    Not assigned
+                {% endif %}
+            </td>
+
+            <td>
+                <span class="badge bg-primary">
+                    {{ booking["trek_status"] }}
+                </span>
+            </td>
+
+            <td>
+                <span class="badge bg-success">
+                    {{ booking["status"] }}
+                </span>
+            </td>
+
+            <td>{{ booking["booking_date"] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+
+<div class="alert alert-info">
+    You have not booked any treks yet.
+</div>
+
+{% endif %}
+
+{% endblock %}

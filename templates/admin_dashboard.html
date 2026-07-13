@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Admin Dashboard</h2>
+
+<div class="row mb-4">
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Total Treks</h5>
+                <h2>{{ stats["treks"] }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Total Users</h5>
+                <h2>{{ stats["users"] }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Total Staff</h5>
+                <h2>{{ stats["staff"] }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Total Bookings</h5>
+                <h2>{{ stats["bookings"] }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="mb-4">
+    <a href="{{ url_for('create_trek') }}" class="btn btn-success">
+        Create New Trek
+    </a>
+
+    <a href="{{ url_for('admin_treks') }}" class="btn btn-outline-success">
+        Manage Treks
+    </a>
+
+    <a href="{{ url_for('pending_staff') }}" class="btn btn-outline-primary">
+        Pending Staff Approvals
+    </a>
+</div>
+
+<h4>Pending Staff Requests</h4>
+
+{% if pending_staff %}
+
+<table class="table table-bordered table-striped mt-3">
+    <thead class="table-success">
+        <tr>
+            <th>Staff ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>Registered On</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for staff in pending_staff %}
+        <tr>
+            <td>{{ staff["user_id"] }}</td>
+            <td>{{ staff["name"] }}</td>
+            <td>{{ staff["email"] }}</td>
+            <td>{{ staff["contact"] }}</td>
+            <td>{{ staff["created_at"] }}</td>
+            <td>
+                <form method="POST"
+                      action="{{ url_for('approve_staff', staff_id=staff['user_id']) }}">
+                    <button class="btn btn-sm btn-success">
+                        Approve
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+
+<div class="alert alert-info mt-3">
+    No pending staff requests.
+</div>
+
+{% endif %}
+
+{% endblock %}

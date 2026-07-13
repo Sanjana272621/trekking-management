@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Pending Staff Approvals</h2>
+
+<a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mb-3">
+    Back to Dashboard
+</a>
+
+{% if staff_members %}
+
+<table class="table table-bordered table-striped">
+    <thead class="table-success">
+        <tr>
+            <th>Staff ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>Registered On</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for staff in staff_members %}
+        <tr>
+            <td>{{ staff["user_id"] }}</td>
+            <td>{{ staff["name"] }}</td>
+            <td>{{ staff["email"] }}</td>
+            <td>{{ staff["contact"] }}</td>
+            <td>{{ staff["created_at"] }}</td>
+            <td>
+                <form method="POST"
+                      action="{{ url_for('approve_staff', staff_id=staff['user_id']) }}">
+                    <button class="btn btn-sm btn-success">
+                        Approve Staff
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+
+<div class="alert alert-info">
+    There are no pending staff approval requests.
+</div>
+
+{% endif %}
+
+{% endblock %}
