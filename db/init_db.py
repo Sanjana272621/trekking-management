@@ -2,7 +2,8 @@ import sqlite3
 from pathlib import Path
 from werkzeug.security import generate_password_hash
 
-DATABASE = Path("instance/trekking.db")
+# Keep this in sync with app.py (db/instance/trekking.db under the project root).
+DATABASE = Path(__file__).resolve().parent / "instance" / "trekking.db"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
@@ -59,7 +60,7 @@ WHERE status = 'Booked';
 """
 
 def get_connection():
-    DATABASE.parent.mkdir(exist_ok=True)
+    DATABASE.parent.mkdir(parents=True, exist_ok=True)
 
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
