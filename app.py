@@ -9,7 +9,13 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 
-app.config["DATABASE"] = os.environ.get("DATABASE_URL")
+# load environment variables from a .env file in the project root
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+
+database_url = os.environ.get("DATABASE_URL", "").strip()
+
+
+app.config["DATABASE"] = database_url
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
 def get_db():
@@ -21,7 +27,7 @@ def get_db():
     return g.db
 
 
-@app.close_app
+@app.teardown_appcontext
 def close_db(error=None):
     db = g.pop("db", None)
 
@@ -70,6 +76,19 @@ def role_required(*roles):
         return wrapped_view
 
     return decorator
+
+@app.route("/")
+def home():
+    return redirect(url_for("login"))
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    if g.user["role"] == "admin":
+        return render_template("admin_dashboard.html")
+    if g.user["role"] == "staff":
+        return render_template("staff_dashboard.html")
+    return render_template("user_dashboard.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -138,3 +157,6 @@ def register(role):
             flash("That email is already registered.", "danger")
 
     return render_template("register.html", role=role)
+
+if __name__ == "__main__":
+    app.run(debug=True)
