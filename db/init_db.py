@@ -71,22 +71,31 @@ def init_database():
     conn = get_connection()
     conn.executescript(SCHEMA)
 
+    admin_email = "admin@gmail.com"
+    admin_password = "1"
+
     conn.execute("""
-        INSERT OR IGNORE INTO users
-        (name, email, password_hash, role, is_approved)
-        VALUES (?, ?, ?, 'admin', 1)
+        INSERT INTO users
+        (name, email, password_hash, role, is_approved, is_blacklisted)
+        VALUES (?, ?, ?, 'admin', 1, 0)
+        ON CONFLICT(email) DO UPDATE SET
+            name = excluded.name,
+            password_hash = excluded.password_hash,
+            role = 'admin',
+            is_approved = 1,
+            is_blacklisted = 0
     """, (
         "System Admin",
-        "admin@trek.local",
-        generate_password_hash("Admin@123")
+        admin_email,
+        generate_password_hash(admin_password),
     ))
 
     conn.commit()
     conn.close()
 
     print("Database created successfully.")
-    print("Admin email: admin@trek.local")
-    print("Admin password: Admin@123")
+    print(f"Admin email: {admin_email}")
+    print(f"Admin password: {admin_password}")
 
 if __name__ == "__main__":
     init_database()
