@@ -8,7 +8,9 @@
     Back to Dashboard
 </a>
 
-<form method="GET" class="card card-body mb-4">
+<form method="GET"
+      action="{{ url_for('view_treks') }}"
+      class="card card-body mb-4">
 
     <div class="row">
 
@@ -119,6 +121,7 @@
 
             <div class="card-footer bg-white">
 
+                {% if trek["status"] == "Open" and trek["available_slots"] > 0 %}
                 <form method="POST"
                       action="{{ url_for('book_trek', trek_id=trek['trek_id']) }}">
 
@@ -127,6 +130,15 @@
                     </button>
 
                 </form>
+                {% elif trek["status"] == "Approved" %}
+                <button class="btn btn-secondary w-100" disabled>
+                    Opening Soon
+                </button>
+                {% else %}
+                <button class="btn btn-secondary w-100" disabled>
+                    Not Available
+                </button>
+                {% endif %}
 
             </div>
 
@@ -141,7 +153,11 @@
 {% else %}
 
 <div class="alert alert-info">
-    No open treks found.
+    {% if has_filters %}
+        No treks match your search. Try different keywords or clear the filters.
+    {% else %}
+        No treks are available right now.
+    {% endif %}
 </div>
 
 {% endif %}

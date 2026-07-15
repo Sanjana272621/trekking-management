@@ -395,28 +395,34 @@ def view_treks():
     search_text = request.args.get("q", "").strip()
     difficulty = request.args.get("difficulty", "").strip()
     location = request.args.get("location", "").strip()
+    has_filters = bool(search_text or difficulty or location)
 
     query = """
         SELECT t.*, s.name AS staff_name
         FROM treks t
         LEFT JOIN users s ON s.user_id = t.assigned_staff_id
         WHERE t.is_archived = 0
-          AND t.status = 'Open'
-          AND t.available_slots > 0
+          AND t.status IN ('Open', 'Approved')
     """
     params = []
 
     if search_text:
-        query += " AND (t.trek_name LIKE ? OR t.location LIKE ?)"
-        params.extend([f"%{search_text}%", f"%{search_text}%"])
+        pattern = f"%{search_text.lower()}%"
+        query += """
+          AND (
+              LOWER(t.trek_name) LIKE ?
+              OR LOWER(t.location) LIKE ?
+          )
+        """
+        params.extend([pattern, pattern])
 
     if difficulty:
         query += " AND t.difficulty = ?"
         params.append(difficulty)
 
     if location:
-        query += " AND t.location LIKE ?"
-        params.append(f"%{location}%")
+        query += " AND LOWER(t.location) LIKE ?"
+        params.append(f"%{location.lower()}%")
 
     query += " ORDER BY t.start_date"
 
@@ -427,6 +433,7 @@ def view_treks():
         search_text=search_text,
         difficulty=difficulty,
         location=location,
+        has_filters=has_filters,
     )
 
 
